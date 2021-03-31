@@ -11,8 +11,8 @@ from torchvision import transforms
 # dataset imports
 import os
 import torch
-import torch.utils.data
 import torchvision
+from torch.utils.data import DataLoader
 
 class Rescale(object):
     """Rescale the image in a sample to a given size.
@@ -170,7 +170,6 @@ class HPAImageDataset(object):
         
         if self.transforms is not None:
             # torchvision compose only accepts single input
-            sample = {'image': img, 'target': target}
             sample = self.transforms({'image': img, 'target': target})
             img, target = sample['image'], sample['target']
 
@@ -184,18 +183,34 @@ ROOT_DIR = 'C:/Users/Admin/Git/HPA-Single-Cell-Classification/input/image_subset
 labels = dict(zip(X.ID, X.Label.apply(lambda x: map_labels[x])))
 
 transformed_dataset = HPAImageDataset(root=ROOT_DIR,
-                          transforms=get_transform(),
-                          labels=labels,
-                          )
-                
-data_loader = torch.utils.data.DataLoader(transformed_dataset,
-                                          batch_size=32,
-                                          shuffle=True)
+                                   transforms=get_transform(),
+                                   labels=labels,
+                                                )
 
-i = 0
+sub_dataset = torch.utils.data.Subset(transformed_dataset, list(range(5)))
+
+def collate_fn(batch):
+    return(tuple(zip(*batch)))
+
+# batch size
+train_batch_size = 64
+
+
+data_loader = DataLoader(sub_dataset, 
+                                        batch_size=train_batch_size, 
+                                        shuffle=True, 
+                                        collate_fn=collate_fn)
+
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
+
+# for imgs, annotations in data_loader:
+#     imgs = list(img.to(device) for img in imgs)
+#     annotations = [{k: v.to(device) for k, v in t.items()} for t in
+#                    annotations]
+#     print(annotations)
 for i_batch, sample_batched in enumerate(data_loader):
-    i+=1
-    print(i_batch, sample_batched['image'].size(),
-          sample_batched['targets'].size())
+    print(i_batch, sample_batched)
+    # observe 4th batch and stop.
     if i_batch == 3:
         break
