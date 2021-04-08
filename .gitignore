@@ -1,2 +1,7 @@
 # Ignore Mac DS_Store files
 .DS_Store
+
+# image subset
+input/image_subset/image/
+input/image_subset/mask/
+
