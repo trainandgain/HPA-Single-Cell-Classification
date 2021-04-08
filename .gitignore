@@ -5,3 +5,5 @@
 input/image_subset/image/
 input/image_subset/mask/
 
+# remove path
+resnet50.pth
