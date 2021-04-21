@@ -1,3 +1,4 @@
+import torchvision
 class Tile(object):
     """
     Takes in:
@@ -8,17 +9,17 @@ class Tile(object):
             'yellow': Image.open(y_path),
             'mask': Image.open(mask_path)
         }
-    
+
     target = {
         'image_id': torch.tensor([idx]),
         'labels': np.array(df.iloc[idx, 3:])
     }
     Outputs:
-    
+
     imgs = {
             'tiles': tiles
         }
-        
+
     target = {
         'image_id': torch.tensor([idx]),
         'labels': np.array(df.iloc[idx, 3:])
@@ -179,3 +180,10 @@ class Rescale(object):
             imgs[i] = resize(imgs[i], 
                              (new_h, new_w))
         return ((imgs, target))
+
+
+# define transforms
+def get_transform():
+    custom_transforms = [Tile(), Rescale((224,224)),
+                         ImageToTensor()]
+    return torchvision.transforms.Compose(custom_transforms)
