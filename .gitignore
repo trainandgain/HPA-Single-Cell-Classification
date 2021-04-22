@@ -7,3 +7,7 @@ input/image_subset/mask/
 
 # remove path
 resnet50.pth
+
+# cache
+__pycache__
+src/__pycache__

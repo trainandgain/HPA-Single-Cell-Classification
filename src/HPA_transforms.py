@@ -1,4 +1,8 @@
 import torchvision
+import numpy as np
+from torchvision import transforms
+from skimage.transform import rescale, resize, downscale_local_mean
+import torch
 class Tile(object):
     """
     Takes in:

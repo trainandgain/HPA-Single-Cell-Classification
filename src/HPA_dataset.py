@@ -41,7 +41,7 @@ class HPAImageDataset(object):
         #define target
         target = {
             'image_id': idx,
-            'labels': self.df.iloc[0, 2:].to_numpy(dtype='float16')
+            'labels': self.df.iloc[0, 3:].to_numpy(dtype='float16')
         }
 
         if self.transforms is not None:
