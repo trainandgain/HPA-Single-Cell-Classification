@@ -113,7 +113,7 @@ def segment_image(img_id, input_dir, output_dir, seg):
     
     return df
 
-def save_progress(train_df, output_df output_dir):
+def save_progress(train_df, output_df, output_dir):
     'Save progress to csv file in output directory'
     # Append weak labels to cells in parent image 
     labels = train_df.set_index('ID')
@@ -141,7 +141,7 @@ def run(input_dir, train_csv, output_dir, nuc_model_path, cell_model_path):
         df = segment_image(img_id, input_dir, output_dir, seg)
         output_df = output_df.append(df)
         # Checkpoint every 5 images saving progress to csv
-        if count % 5:
+        if count % 5 == 0:
             save_progress(train_df, output_df, output_dir)
         print(f'Image {count} processed!')
     
