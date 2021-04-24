@@ -94,7 +94,7 @@ def extract_and_save(parent_id, channels, mask, df, destination, visualise=False
             single_cell = single_cell[y_min:(y_max + 1), x_min:(x_max + 1)]
             #plt.imshow(single_cell)
             cell_id = f'{parent_id}_cell_{label}'  # Overall cell id
-            cell_channel_id = f'{cell_id}_{channel_colour}'  # Append colour channel when saving images
+            cell_channel_id = f'{cell_id}_{channel_colour}'  # Append colour channel when saving
             save_img(destination, cell_channel_id, single_cell)
             
         df = record_metadata(single_cell, cell_id, label, parent_id, edge_of_image, df)
@@ -113,12 +113,21 @@ def segment_image(img_id, input_dir, output_dir, seg):
     
     return df
 
-def run(input_dir, train_csv, output_dir, NUC_MODEL, CELL_MODEL):
+def save_progress(train_df, output_df output_dir):
+    'Save progress to csv file in output directory'
+    # Append weak labels to cells in parent image 
+    labels = train_df.set_index('ID')
+    output_df = output_df.join(labels, on='parent_image_id')
+    # Save final csv with segmented cell images
+    output_df.reset_index(drop=True, inplace=True)
+    output_df.to_csv(os.path.join(output_dir, 'train.csv'))
+    
+def run(input_dir, train_csv, output_dir, nuc_model_path, cell_model_path):
     'Run segment_image function on all images in training csv'
     # Init seg models
     seg = CellSegmentator(
-        NUC_MODEL,
-        CELL_MODEL,
+        nuc_model_path,
+        cell_model_path,
         scale_factor=0.25,
         device="cuda",
         padding=False,  # RUN W/ PADDING=TRUE???
@@ -131,15 +140,13 @@ def run(input_dir, train_csv, output_dir, NUC_MODEL, CELL_MODEL):
     for count, img_id, target in train_df.itertuples():
         df = segment_image(img_id, input_dir, output_dir, seg)
         output_df = output_df.append(df)
+        # Checkpoint every 5 images saving progress to csv
+        if count % 5:
+            save_progress(train_df, output_df, output_dir)
         print(f'Image {count} processed!')
     
-    # Append weak labels to cells in parent image 
-    train_df.set_index('ID', inplace=True)
-    output_df = output_df.join(train_df, on='parent_image_id')
-    
-    # Save new csv with segmented cell images
-    output_df.reset_index(drop=True, inplace=True)
-    output_df.to_csv(os.path.join(output_dir, 'train.csv'))
+    # Final save at end of training dataframe
+    save_progress(train_df, output_df, output_dir)
     
 
 if __name__ == '__main__':
