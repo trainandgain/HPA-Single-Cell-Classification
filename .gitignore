@@ -4,6 +4,8 @@
 # image subset
 input/image_subset/image/
 input/image_subset/cells/
+input/image_subset/cell/
+input/image_subset/train.csv
 
 # models
 /models
