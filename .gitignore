@@ -3,7 +3,7 @@
 
 # image subset
 input/image_subset/image/
-input/image_subset/mask/
+input/image_subset/cells/
 
 # models
 /models
