@@ -5,7 +5,8 @@
 input/image_subset/image/
 input/image_subset/mask/
 
-
+# models
+/models
 # cache
 __pycache__
 src/__pycache__
