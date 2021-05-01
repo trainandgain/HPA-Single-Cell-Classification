@@ -121,7 +121,7 @@ def save_progress(train_df, output_df, output_dir):
     # Save final csv with segmented cell images
     output_df.reset_index(drop=True, inplace=True)
     output_df.to_csv(os.path.join(output_dir, 'train.csv'))
-    
+
 def run(input_dir, train_csv, output_dir, nuc_model_path, cell_model_path):
     'Run segment_image function on all images in training csv'
     # Init seg models
@@ -148,7 +148,7 @@ def run(input_dir, train_csv, output_dir, nuc_model_path, cell_model_path):
     # Final save at end of training dataframe
     save_progress(train_df, output_df, output_dir)
     
-
+    
 if __name__ == '__main__':
     
     parser = ArgumentParser()
