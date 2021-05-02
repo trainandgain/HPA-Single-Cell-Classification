@@ -7,3 +7,4 @@ CELL_MODEL = "../models/cell-model.pth"
 CHANNELS = ['red', 'yellow', 'blue', 'green']
 
 RANDOM_STATE = 42
+ 
