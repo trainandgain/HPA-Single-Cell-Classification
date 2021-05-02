@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import imageio
 
 from hpacellseg.cellsegmentator import CellSegmentator
 from hpacellseg.utils import label_cell
@@ -68,7 +69,7 @@ def record_metadata(array_img, cell_id, cell_num, parent_id, edge_of_image, df):
 def save_img(destination_dir, filename, array_img):
     'Save numpy array to png file'
     path = os.path.join(destination_dir, filename)
-    plt.imsave('{}.png'.format(path), array_img)
+    imageio.imwrite('{}.png'.format(path), array_img)
     
 def extract_and_save(parent_id, channels, mask, df, destination, visualise=False):
     'Save individual cells as channel images and record metadata in df'
@@ -86,7 +87,7 @@ def extract_and_save(parent_id, channels, mask, df, destination, visualise=False
         edge_of_image = is_image_edge(temp_mask.shape, y_min, y_max, x_min, x_max)
         
         for channel in channels:
-            channel_arr = np.array(plt.imread(channel))
+            channel_arr = np.array(imageio.imread(channel))
             channel_colour = channel.split('_')[-1][:-4]  # grab colour from end of channel path
             # Zero pad and square off
             single_cell = temp_mask * channel_arr
