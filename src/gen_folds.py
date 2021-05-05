@@ -46,7 +46,7 @@ def run(train_csv, output_csv, n_folds):
     df = gen_folds(df, img_mat, target_mat, n_folds)
     df.to_csv(output_csv)
     
-    
+
 if __name__ == '__main__':
     
     parser = ArgumentParser()
@@ -55,5 +55,5 @@ if __name__ == '__main__':
     parser.add_argument('--n_folds', type=int)
     args = parser.parse_args()
     
-    run(args.train_csv, args.output_csv, args.n_folds)
+    run(args.train_csv, args.output_csv, int(args.n_folds))
     

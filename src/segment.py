@@ -122,7 +122,7 @@ def save_progress(train_df, output_df, output_dir):
     output_df.reset_index(drop=True, inplace=True)
     output_df.to_csv(os.path.join(output_dir, 'train.csv'))
     
-def run(input_dir, train_csv, output_dir, nuc_model_path, cell_model_path):
+def run(input_dir, train_csv, output_dir, checkpoint_csv, nuc_model_path, cell_model_path):
     'Run segment_image function on all images in training csv'
     # Init seg models
     seg = CellSegmentator(
@@ -135,9 +135,20 @@ def run(input_dir, train_csv, output_dir, nuc_model_path, cell_model_path):
         )
     # Get image ids and their targets from provided training csv
     train_df = read_training_csv(train_csv)
-    output_df = pd.DataFrame()  # init output_df to record metadata
-    # Iterate through each image_id in train.csv
-    for count, img_id, target in train_df.itertuples():
+    
+    if checkpoint_csv:
+        output_df = pd.read_csv(checkpoint_csv, index_col=0)
+        output_df.drop('Label', axis=1, inplace=True)
+        curr_img = output_df['parent_image_id'].iloc[-1]
+        row = train_df[train_df['ID'] == curr_img].head(1)
+        starting_row = row.index.item()
+    else:
+        output_df = pd.DataFrame()  # init output_df to record metadata from scratch
+        starting_row = 0
+        
+    # Iterate through each image_id
+    image_info = train_df.iloc[starting_row:, :]
+    for count, img_id, target in image_info.itertuples():
         df = segment_image(img_id, input_dir, output_dir, seg)
         output_df = output_df.append(df)
         # Checkpoint every 5 images saving progress to csv
@@ -155,7 +166,8 @@ if __name__ == '__main__':
     parser.add_argument('--input_dir', type=str)
     parser.add_argument('--train_csv', type=str)
     parser.add_argument('--output_dir', type=str)
+    parser.add_argument('--checkpoint_csv', type=str)
     args = parser.parse_args()
     
-    run(args.input_dir, args.train_csv, args.output_dir, NUC_MODEL, CELL_MODEL)
+    run(args.input_dir, args.train_csv, args.output_dir, args.checkpoint_csv, NUC_MODEL, CELL_MODEL)
     
