@@ -49,7 +49,6 @@ def mAUC(y_preds, y_targets, n_iters=10):
         # Extract precision recall for given thresholds and estimate auc
         prec_rec = np.array(prec_rec)
         prec, rec = prec_rec[:, 0], prec_rec[:, 1]
-        print(rec)
         ap = auc(rec, prec)
         ap_rec.append(ap)
     if len(ap_rec) == 0:
